@@ -1,0 +1,127 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "YOUR_SDXL_CHECKPOINT.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "小家电产品效果图（遵循草图形体），几何简洁，人体工学友好，磨砂铝合金+哑光PC+抛光玻璃，45°三分之二视角，摄影棚三点布光，中性灰纯背景，广告级写实，细节锐利，超清"
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "文字、水印、logo 拼写错误、比例夸张、畸变、断裂、低清晰度、过度反光、塑料感、涂抹、噪点、手绘风、卡通风、过曝、过饱和"
+    }
+  },
+  "4": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "5": {
+    "class_type": "ImageInput",
+    "inputs": {}
+  },
+  "6": {
+    "class_type": "CannyEdgePreprocessor",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ],
+      "low_threshold": 100,
+      "high_threshold": 200
+    }
+  },
+  "7": {
+    "class_type": "ControlNetLoader",
+    "inputs": {
+      "control_net_name": "YOUR_SDXL_CONTROLNET_CANNY.safetensors"
+    }
+  },
+  "8": {
+    "class_type": "ApplyControlNet",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "control_net": [
+        "7",
+        0
+      ],
+      "image": [
+        "6",
+        0
+      ],
+      "strength": 0.9,
+      "start_percent": 0.0,
+      "end_percent": 1.0
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "positive": [
+        "2",
+        0
+      ],
+      "negative": [
+        "3",
+        0
+      ],
+      "latent_image": [
+        "4",
+        0
+      ],
+      "seed": 123456789,
+      "steps": 28,
+      "cfg": 5.5,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "SmallAppliance_Sketch2Render_SDXL_Canny"
+    }
+  }
+}
